@@ -9,6 +9,8 @@ To run, make sure you have Node.js installed then download this repo, open the f
 
 Everything updates in real time. 
 
+<h1 style="color: red">We are working on updating this repo to Decode (2026). We will remove this message when we have fully added support for Decode!</h1>
+
 ## IMPORTANT 
 Most browsers disable audio by default to prevent ads from playing. To enable audio, in the admin dashboard, enable `Developer Mode`, then on the scoreboard website click the `Start Audio` button a few times.
 
@@ -23,4 +25,5 @@ What I want to do in the near futer is turn this into a .exe file that way you d
 ![picture2](https://i.imgur.com/Am9Ymld.png)
 ![picture3](https://i.imgur.com/LjuxEjd.png)
 ![picture4](https://i.imgur.com/1ICWnFA.png)
+
 ![picture5](https://i.imgur.com/wgz5Zku.png)
