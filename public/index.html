@@ -4,45 +4,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>BIOBUZZ Scoreboard</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         * {
-            font-family: Arial, Helvetica, sans-serif;
-            transition: 0.3s;
+            font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
-            background-color: red;
-            color: white;
+            background-color: #FF0000;
+            /* Fallback, overridden by JS */
+            color: #ffffff;
             margin: 0;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .top-bar {
             width: 100%;
-            height: auto;
-            padding: 5px;
-            text-align: center;
-            margin: auto;
-            background-color: white;
-            color: black;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-bottom: 4px solid #fbdc00;
+            /* FTC Yellow accent */
+        }
+
+        .top-bar h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .top-bar .time-total {
+            font-size: 2.2rem;
+            font-weight: bold;
+            background: #222;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid #444;
+        }
+
+        #time {
+            color: #fbdc00;
+        }
+
+        #totalpoints {
+            color: #00ff00;
         }
 
         .scores-wrapper {
             display: flex;
-            justify-content: space-between;
-            /* Adjust alignment */
-            gap: 20px;
-            /* Adjust spacing between them */
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 40px;
+            flex: 1;
         }
 
         .scorescontainer {
             flex: 1;
-            /* Both take equal width */
+            min-width: 350px;
+            max-width: 500px;
+            background-color: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scorescontainer h2 {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 1.6rem;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 8px;
+        }
+
+        .scorescontainer h2 span {
+            font-weight: 700;
+            color: #fbdc00;
+        }
+
+        .section-title {
             text-align: center;
-            padding: 10px;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ffffff;
+            padding-bottom: 10px;
+        }
+
+        #dev {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            padding: 8px 16px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            display: none;
+        }
+
+        #dev:hover {
+            background: #666;
         }
     </style>
 </head>
@@ -50,100 +131,130 @@
 <body id="body">
     <button id="dev">Start Audio</button>
     <audio id="player" src></audio>
+
     <div class="top-bar">
-        <h1>Time: <span id="time">2:00</span> | Total: <span id="totalpoints">0</span></h1>
+        <h1>BIOBUZZ</h1>
+        <div class="time-total">
+            Time: <span id="time">2:30</span> &nbsp;|&nbsp; Score: <span id="totalpoints">0</span>
+        </div>
     </div>
+
     <div class="scores-wrapper">
         <div class="scorescontainer">
-            <h2>High Basket: <span id="hb" style="font-weight: bold;">0</span></h2>
-            <h2>Low Basket: <span id="lb" style="font-weight: bold;">0</span></h2>
-            <h2>NET: <span id="net" style="font-weight: bold;">0</span></h2>
-
-            <h2>High Chamber: <span id="hc" style="font-weight: bold;">0</span></h2>
-            <h2>Low Chamber: <span id="lc" style="font-weight: bold;">0</span></h2>
-            <h2>Location: <span id="lo" style="font-weight: bold;">0</span> | <span id="loau" style="font-weight: bold;">0</span></h2>
-            <h2>Penalty: <span id="mip" style="font-weight: bold;">0</span> Minor | <span id="map"
-                    style="font-weight: bold;">0</span> Major</h2>
+            <h2 class="section-title">Match Objectives</h2>
+            <h2>Leave: <span id="leave">No</span></h2>
+            <h2>Park: <span id="park">No</span></h2>
+            <h2>Hive Tips: <span id="hive_tips">0</span></h2>
+            <h2>Cell Remaining: <span id="cell_rem">0</span></h2>
+            <h2>Bottom Nectar: <span id="bot_nectar">No</span></h2>
+            <h2>Flower Owned: <span id="flower_owned">0</span></h2>
+            <h2>Garden Elements: <span id="garden_elements">0</span></h2>
+            <h2>Fouls: <span><span id="minor_foul">0</span> Min / <span id="major_foul">0</span> Maj</span></h2>
         </div>
+
         <div class="scorescontainer">
-            <h2>Driver: <span id="driver" style="font-weight: bold;">None</span></h2>
-            <h2>Operator: <span id="operator" style="font-weight: bold;">None</span></h2>
-            <h2>Human Player: <span id="human" style="font-weight: bold;">none</span></h2>
-            <h2>Driving Coach: <span id="coach" style="font-weight: bold;">None</span></h2>
+            <h2 class="section-title">Drive Team</h2>
+            <h2>Driver: <span id="driver">None</span></h2>
+            <h2>Operator: <span id="operator">None</span></h2>
+            <h2>Human Player: <span id="human">None</span></h2>
+            <h2>Drive Coach: <span id="coach">None</span></h2>
         </div>
     </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-        const player = document.getElementById('player')
+        const player = document.getElementById('player');
 
-        socket.on('reload', (msg) => {
-            window.location.reload()
-        })
+        // Helper to format boolean values
+        function formatBool(val) {
+            return (val === "Yes" || val === 1 || val === true) ? "Yes" : "No";
+        }
+
+        socket.on('reload', () => {
+            window.location.reload();
+        });
 
         socket.on('updateall', (msg) => {
             document.getElementById('time').innerHTML = formatTime(msg.time);
-            console.log(msg);
 
-            document.getElementById('hb').innerHTML = msg.hb;
-            document.getElementById('lb').innerHTML = msg.lb;
-            document.getElementById('net').innerHTML = msg.net;
-            document.getElementById('hc').innerHTML = msg.hc;
-            document.getElementById('lc').innerHTML = msg.lc;
-            document.getElementById('map').innerHTML = msg.map;
-            document.getElementById('mip').innerHTML = msg.mip;
+            // Score Updates
+            document.getElementById('leave').innerHTML = formatBool(msg.leave);
+            document.getElementById('park').innerHTML = formatBool(msg.park);
+            document.getElementById('hive_tips').innerHTML = msg.hive_tips;
+            document.getElementById('cell_rem').innerHTML = msg.cell_rem;
+            document.getElementById('bot_nectar').innerHTML = formatBool(msg.bot_nectar);
+            document.getElementById('flower_owned').innerHTML = msg.flower_owned;
+            document.getElementById('garden_elements').innerHTML = msg.garden_elements;
+            document.getElementById('minor_foul').innerHTML = msg.minor_foul;
+            document.getElementById('major_foul').innerHTML = msg.major_foul;
             document.getElementById('totalpoints').innerHTML = msg.total;
-            document.getElementById('lo').innerHTML = msg.lo;
-            document.getElementById('loau').innerHTML = msg.loau;
 
+            // Drive Team Updates
             document.getElementById('driver').innerHTML = msg.driver;
             document.getElementById('operator').innerHTML = msg.operator;
             document.getElementById('human').innerHTML = msg.human;
             document.getElementById('coach').innerHTML = msg.coach;
 
+            // UI Updates
             document.getElementById('body').style.backgroundColor = msg.bgcolor;
 
             if (msg.dev == true) {
-                document.getElementById('dev').style.display = 'block'
+                document.getElementById('dev').style.display = 'block';
             } else {
-                document.getElementById('dev').style.display = 'none'
+                document.getElementById('dev').style.display = 'none';
             }
 
-            if (msg.time == 158 && msg.silent == false) {
-                player.src = '/audio/match_start.mp3';
-                player.play();
-            }
+            // BIOBUZZ Audio Cues (assuming 158s total: 30s auto + 8s transition + 120s teleop)
+            if (!msg.silent) {
+                if (msg.time == 158) {
+                    player.src = '/audio/match_start.mp3';
+                    player.play();
+                }
 
-            if (msg.time == 128 && msg.silent == false) {
-                player.src = '/audio/auto_complete.mp3';
-                player.play();
-            }
+                if (msg.time == 128) {
+                    player.src = '/audio/auto_complete.mp3';
+                    player.play();
+                }
 
-            if (msg.time == 126 && msg.silent == false) {
-                player.src = '/audio/drivers_controllers.mp3';
-                player.play();
-            }
+                if (msg.time == 126) {
+                    player.src = '/audio/drivers_controllers.mp3';
+                    player.play();
+                }
 
-            if (msg.time == 123 && msg.silent == false) {
-                player.src = '/audio/teleop_start.mp3';
-                player.play();
-            }
+                if (msg.time == 123) {
+                    player.src = '/audio/teleop_start.mp3';
+                    player.play();
+                }
 
-            if (msg.time == 30 && msg.silent == false) {
-                player.src = '/audio/endgame_start.mp3';
-                player.play();
-            }
+                if (msg.time == 60) {
+                    player.src = '/audio/chime-sfx.mp3';
+                    player.play();
+                }
+                
+                if (msg.time == 20) {
+                    player.src = '/audio/endgame_start.mp3';
+                    player.play();
+                }
 
-            if (msg.time == 1 && msg.silent == false) {
-                player.src = '/audio/match_end.mp3';
-                player.play();
+                if (msg.time == 1) {
+                    player.src = '/audio/match_end.mp3';
+                    player.play();
+                }
             }
-        })
-
+        });
 
         function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
+            // Adjust to show standard match time, hiding the 8 second transition
+            let displaySeconds = seconds;
+            if (seconds > 120 && seconds <= 128) {
+                displaySeconds = 120; // Hold at 2:00 during transition
+            } else if (seconds > 128) {
+                displaySeconds = seconds - 8; // Auto period
+            }
+
+            const mins = Math.floor(displaySeconds / 60);
+            const secs = displaySeconds % 60;
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
@@ -156,8 +267,7 @@
                 timer: msg.time,
                 timerProgressBar: true
             });
-        })
-
+        });
     </script>
 </body>
 

@@ -12,15 +12,15 @@ const io = new Server(server);
 var time = 0;
 var settings = {
   'time': 0,
-  'hb': 0,
-  'lb': 0,
-  'net': 0,
-  'hc': 0,
-  'lc': 0,
-  'map': 0,
-  'mip': 0,
-  'lo': 0,
-  'loau': 0,
+  'leave': 0,
+  'park': 0,
+  'hive_tips': 0,
+  'cell_rem': 0,
+  'bot_nectar': 0,
+  'flower_owned': 0,
+  'garden_elements': 0,
+  'minor_foul': 0,
+  'major_foul': 0,
   'bgcolor': '#FF0000',
   'silent': 0,
   'total': 0
@@ -56,18 +56,21 @@ io.on('connection', (socket) => {
   })
 
   socket.on('updatescores', (msg) => {
-    var hangpoints = 0;
+    var leavepoints = 0;
+    var parkpoints = 0;
+    var botnectarpoints = 0;
 
     settings = {
       'time': settings.time,
-      'hb': msg.hb,
-      'lb': msg.lb,
-      'net': msg.net,
-      'hc': msg.hc,
-      'lc': msg.lc,
-      'map': msg.map,
-      'mip': msg.mip,
-      'lo': msg.lo,
+      'leave': msg.leave,
+      'park': msg.park,
+      'hive_tips': msg.hive_tips,
+      'cell_rem': msg.cell_rem,
+      'bot_nectar': msg.bot_nectar,
+      'flower_owned': msg.flower_owned,
+      'garden_elements': msg.garden_elements,
+      'minor_foul': msg.minor_foul,
+      'major_foul': msg.major_foul,
       'bgcolor': msg.bgcolor,
       'silent': msg.silent,
       'dev': msg.dev,
@@ -77,17 +80,13 @@ io.on('connection', (socket) => {
       'coach': msg.coach
     }
 
-    if (msg.lo == "None") hangpoints = hangpoints + 0;
-    if (msg.lo == "Observation Zone" || msg.lo == "Level 1") hangpoints = hangpoints + 3;
-    if (msg.lo == "Level 2") hangpoints = hangpoints + 15;
-    if (msg.lo == "Level 3") hangpoints = hangpoints + 30;
+    // Handle boolean or string inputs for flat-point objectives
+    if (msg.leave == "Yes" || msg.leave == 1 || msg.leave == true) leavepoints = 3;
+    if (msg.park == "Yes" || msg.park == 1 || msg.park == true) parkpoints = 5;
+    if (msg.bot_nectar == "Yes" || msg.bot_nectar == 1 || msg.bot_nectar == true) botnectarpoints = 5;
 
-    if (msg.loau == "None") hangpoints = hangpoints + 0;
-    if (msg.loau == "Observation Zone" || msg.lo == "Level 1") hangpoints = hangpoints + 3;
-    if (msg.loau == "Level 2") hangpoints = hangpoints + 15;
-    if (msg.loau == "Level 3") hangpoints = hangpoints + 30;
-
-    settings.total = ((msg.hb * 8) + (msg.lb * 4) + (msg.net * 2) + (msg.hc * 10) + (msg.lc * 6) + hangpoints) - ((msg.map * 15) + (msg.mip * 5))
+    // Calculate total using BIOBUZZ points WITHOUT adding your own penalties
+    settings.total = leavepoints + parkpoints + botnectarpoints + (msg.hive_tips * 20) + (msg.cell_rem * 2) + (msg.flower_owned * 2) + (msg.garden_elements * 1);
 
     io.emit('updateall', settings)
   })

@@ -4,225 +4,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>BIOBUZZ Admin Control</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         * {
-            font-family: Arial, Helvetica, sans-serif;
-            transition: 0.3s;
+            font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
         }
 
         body {
-            background-color: red;
-            color: white;
+            background-color: #FF0000;
+            color: #ffffff;
             margin: 0;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .top-bar {
             width: 100%;
-            height: auto;
-            padding: 5px;
-            text-align: center;
-            margin: auto;
-            background-color: white;
-            color: black;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border-bottom: 4px solid #fbdc00;
             position: sticky;
             top: 0;
-            z-index: 1;
+            z-index: 100;
+        }
+
+        .top-bar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .top-bar span {
+            color: #00ff00;
+        }
+        
+        #time { color: #fbdc00; }
+
+        .control-panel {
+            text-align: center;
+            padding: 20px 10px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            margin-bottom: 10px;
         }
 
         .scores-wrapper {
             display: flex;
-            justify-content: space-between;
-            /* Adjust alignment */
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
-            /* Adjust spacing between them */
+            padding: 10px 20px 40px 20px;
+            flex: 1;
         }
 
         .scorescontainer {
             flex: 1;
-            /* Both take equal width */
+            min-width: 320px;
+            max-width: 600px;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
             text-align: center;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 10px;
+        }
+
+        .score-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
             padding: 10px;
+            border-radius: 8px;
         }
 
-        /* CSS */
-        .button-4 {
-            appearance: none;
-            background-color: #FAFBFC;
-            border: 1px solid rgba(27, 31, 35, 0.15);
-            border-radius: 6px;
-            box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
-            box-sizing: border-box;
-            color: #24292E;
-            cursor: pointer;
-            display: inline-block;
-            font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-            font-size: 14px;
+        .score-row p {
+            margin: 0;
+            font-size: 1.2rem;
             font-weight: 500;
-            line-height: 20px;
-            list-style: none;
-            padding: 6px 16px;
-            position: relative;
-            transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
-            user-select: none;
-            -webkit-user-select: none;
+            flex: 1;
+        }
+
+        .score-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-math {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            border: none;
+            background-color: #444;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
             touch-action: manipulation;
-            vertical-align: middle;
-            white-space: nowrap;
-            word-wrap: break-word;
         }
 
-        .button-4:hover {
-            background-color: #F3F4F6;
-            text-decoration: none;
-            transition-duration: 0.1s;
+        .btn-math:active {
+            background-color: #666;
+            transform: scale(0.95);
         }
 
-        .button-4:disabled {
-            background-color: #FAFBFC;
-            border-color: rgba(27, 31, 35, 0.15);
-            color: #959DA5;
-            cursor: default;
+        .btn-toggle {
+            width: 120px;
+            height: 45px;
+            border-radius: 8px;
+            border: 2px solid #555;
+            background-color: #333;
+            color: #ccc;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            touch-action: manipulation;
         }
 
-        .button-4:active {
-            background-color: #EDEFF2;
-            box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
-            transition: none 0s;
+        .btn-toggle.active {
+            background-color: #28a745;
+            border-color: #1e7e34;
+            color: #fff;
         }
 
-        .button-4:focus {
-            outline: 1px transparent;
-        }
-
-        .button-4:before {
-            display: none;
-        }
-
-        .button-4:-webkit-details-marker {
-            display: none;
+        .btn-toggle:active {
+            transform: scale(0.95);
         }
 
         .textbox {
+            width: 70px;
+            height: 45px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid #555;
+            border-radius: 8px;
+            background: #222;
+            color: #fff;
+        }
 
-            padding: 6px 12px;
-            font-size: 16px;
-            font-weight: 400;
-            line-height: 1.5;
-            color: #212529;
-            background-color: #fff;
-            background-clip: padding-box;
-            border: 1px solid #ced4da;
+        .textbox-large {
+            width: 100%;
+            margin-top: 5px;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .button-main {
             appearance: none;
-            border-radius: 4px;
-            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+            background-color: #FAFBFC;
+            border: 1px solid rgba(27, 31, 35, 0.15);
+            border-radius: 8px;
+            color: #24292E;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 20px;
+            margin: 5px;
+            text-transform: uppercase;
+            touch-action: manipulation;
+        }
 
-            :focus {
-                color: #212529;
-                background-color: #fff;
-                border-color: #86b7fe;
-                outline: 0;
-                box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+        .button-main:active {
+            background-color: #EDEFF2;
+            transform: scale(0.98);
+        }
+
+        .button-danger {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        details {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: left;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 600px) {
+            .score-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
             }
-
+            .score-row p { text-align: center; }
+            .score-controls { justify-content: center; }
+            .button-main { width: 45%; padding: 15px 10px; }
+            .btn-toggle { width: 100%; }
         }
     </style>
 </head>
 
 <body id="body">
     <div class="top-bar">
-        <h1>Time: <span id="time">2:00</span> | Total: <span id="totalpoints">0</span></h1>
+        <h1>BIOBUZZ</h1>
+        <h1>Time: <span id="time">2:30</span> | Total: <span id="totalpoints">0</span></h1>
     </div>
-    <br>
-    <center>
-        <button onclick="starttimer(159)" class="button-4">Start Timer</button>
-        <button onclick="stoptimer()" class="button-4">Stop Timer</button>
-        <button onclick="starttimer(128)" class="button-4">Start from teleop</button>
-        <button onclick="reset()" class="button-4">Reset</button>
-        <button onclick="submitalert('warning', 7000, 'Final Score: '+document.getElementById('totalpoints').innerHTML)" class="button-4">Release scores</button>
-        <br><br>
+
+    <div class="control-panel">
+        <button onclick="starttimer(159)" class="button-main">Start Match</button>
+        <button onclick="stoptimer()" class="button-main button-danger">Stop</button>
+        <button onclick="starttimer(128)" class="button-main">TeleOp Only</button>
+        <button onclick="reset()" class="button-main">Reset Scores</button>
+        <button onclick="submitalert('info', 7000, 'Final Score: '+document.getElementById('totalpoints').innerHTML)" class="button-main">Post Score</button>
+        
         <details>
-            <summary>Options</summary>
-            <p>Background Color</p>
-            <input type="color" id="bgcolor" onchange="updatescores()" value="#FF0000">
-            <br>
-            <p>Silent Mode</p>
-            <input type="checkbox" value="False" id="silent" onchange="updatescores()">
-            <p>Developer Mode</p>
-            <input type="checkbox" value="False" id="dev" onchange="updatescores()">
-            <br>
-            <button onclick="reloadclients()">Reload</button>
-            <br>
-            <button onclick="socket.emit('shutdown')">Shut down server</button>
+            <summary>Admin Options</summary>
+            <p>Background Color (Red/Blue): 
+                <input type="color" id="bgcolor" onchange="updatescores()" value="#FF0000">
+            </p>
+            <p><label><input type="checkbox" id="silent" onchange="updatescores()"> Silent Mode</label></p>
+            <p><label><input type="checkbox" id="dev" onchange="updatescores()"> Developer Mode</label></p>
+            <hr style="border-color: #555;">
+            <button onclick="reloadclients()" class="button-main" style="width: 100%; margin: 5px 0;">Force Client Reload</button>
+            <button onclick="socket.emit('shutdown')" class="button-main button-danger" style="width: 100%; margin: 5px 0;">Shut Down Server</button>
         </details>
-    </center>
+    </div>
+
     <div class="scores-wrapper">
         <div class="scorescontainer">
-            <p>High Basket:</p>
-            <button onclick="changeValue('hb', -1)">-</button>
-            <input type="number" class="textbox" id="hb" onchange="updatescores()" value="0">
-            <button onclick="changeValue('hb', 1)">+</button>
+            <h2 class="section-title">Scoring</h2>
+            
+            <div class="score-row">
+                <p>Robot Leave (Auto):</p>
+                <div class="score-controls">
+                    <button id="leave" class="btn-toggle" onclick="toggleValue('leave')" value="No">No</button>
+                </div>
+            </div>
 
-            <p>Low Basket:</p>
-            <button onclick="changeValue('lb', -1)">-</button>
-            <input type="number" class="textbox" id="lb" onchange="updatescores()" value="0">
-            <button onclick="changeValue('lb', 1)">+</button>
+            <div class="score-row">
+                <p>Robot Park:</p>
+                <div class="score-controls">
+                    <button id="park" class="btn-toggle" onclick="toggleValue('park')" value="No">No</button>
+                </div>
+            </div>
 
-            <p>Net Basket:</p>
-            <button onclick="changeValue('net', -1)">-</button>
-            <input type="number" class="textbox" id="net" onchange="updatescores()" value="0">
-            <button onclick="changeValue('net', 1)">+</button>
+            <div class="score-row">
+                <p>Hive Tips:</p>
+                <div class="score-controls">
+                    <button class="btn-math" onclick="changeValue('hive_tips', -1)">-</button>
+                    <input type="number" class="textbox" id="hive_tips" onchange="updatescores()" value="0">
+                    <button class="btn-math" onclick="changeValue('hive_tips', 1)">+</button>
+                </div>
+            </div>
 
-            <p>High Chamber:</p>
-            <button onclick="changeValue('hc', -1)">-</button>
-            <input type="number" class="textbox" id="hc" onchange="updatescores()" value="0">
-            <button onclick="changeValue('hc', 1)">+</button>
+            <div class="score-row">
+                <p>Cell Remaining (Elements):</p>
+                <div class="score-controls">
+                    <button class="btn-math" onclick="changeValue('cell_rem', -1)">-</button>
+                    <input type="number" class="textbox" id="cell_rem" onchange="updatescores()" value="0">
+                    <button class="btn-math" onclick="changeValue('cell_rem', 1)">+</button>
+                </div>
+            </div>
 
-            <p>Low Chamber:</p>
-            <button onclick="changeValue('lc', -1)">-</button>
-            <input type="number" class="textbox" id="lc" onchange="updatescores()" value="0">
-            <button onclick="changeValue('lc', 1)">+</button>
+            <div class="score-row">
+                <p>Bottom Nectar Bonus:</p>
+                <div class="score-controls">
+                    <button id="bot_nectar" class="btn-toggle" onclick="toggleValue('bot_nectar')" value="No">No</button>
+                </div>
+            </div>
 
-            <br>
+            <div class="score-row">
+                <p>Flower Owned (Elements inside):</p>
+                <div class="score-controls">
+                    <button class="btn-math" onclick="changeValue('flower_owned', -1)">-</button>
+                    <input type="number" class="textbox" id="flower_owned" onchange="updatescores()" value="0">
+                    <button class="btn-math" onclick="changeValue('flower_owned', 1)">+</button>
+                </div>
+            </div>
 
-            <p>Major Penalty:</p>
-            <button onclick="changeValue('map', -1)">-</button>
-            <input type="number" class="textbox" id="map" onchange="updatescores()" value="0">
-            <button onclick="changeValue('map', 1)">+</button>
+            <div class="score-row">
+                <p>Garden Elements:</p>
+                <div class="score-controls">
+                    <button class="btn-math" onclick="changeValue('garden_elements', -1)">-</button>
+                    <input type="number" class="textbox" id="garden_elements" onchange="updatescores()" value="0">
+                    <button class="btn-math" onclick="changeValue('garden_elements', 1)">+</button>
+                </div>
+            </div>
+            
+            <div class="score-row">
+                <p>Minor Fouls (Opponent):</p>
+                <div class="score-controls">
+                    <button class="btn-math" onclick="changeValue('minor_foul', -1)">-</button>
+                    <input type="number" class="textbox" id="minor_foul" onchange="updatescores()" value="0">
+                    <button class="btn-math" onclick="changeValue('minor_foul', 1)">+</button>
+                </div>
+            </div>
 
-            <p>Minor Penalty:</p>
-            <button onclick="changeValue('mip', -1)">-</button>
-            <input type="number" class="textbox" id="mip" onchange="updatescores()" value="0">
-            <button onclick="changeValue('mip', 1)">+</button>
+            <div class="score-row">
+                <p>Major Fouls (Opponent):</p>
+                <div class="score-controls">
+                    <button class="btn-math" onclick="changeValue('major_foul', -1)">-</button>
+                    <input type="number" class="textbox" id="major_foul" onchange="updatescores()" value="0">
+                    <button class="btn-math" onclick="changeValue('major_foul', 1)">+</button>
+                </div>
+            </div>
 
-            <p>Location (Auto):</p>
-            <select id="lo" onchange="updatescores()" class="textbox">
-                <option value="None">--</option>
-                <option value="Observation Zone">OZ</option>
-                <option value="Level 1">Level 1</option>
-                <option value="Level 2">Level 2</option>
-                <option value="Level 3">Level 3</option>
-            </select>
-            <p>Location (Teleop):</p>
-            <select id="loau" onchange="updatescores()" class="textbox">
-                <option value="None">--</option>
-                <option value="Observation Zone">OZ</option>
-                <option value="Level 1">Level 1</option>
-                <option value="Level 2">Level 2</option>
-                <option value="Level 3">Level 3</option>
-            </select>
         </div>
+
         <div class="scorescontainer">
-            <p>Driver:</p>
-            <input type="text" class="textbox" id="driver" onchange="updatescores()">
-            <p>Operator:</p>
-            <input type="text" class="textbox" id="operator" onchange="updatescores()">
-            <p>Human Player:</p>
-            <input type="text" class="textbox" id="human" onchange="updatescores()">
-            <p>Driving Coach:</p>
-            <input type="text" class="textbox" id="coach" onchange="updatescores()">
+            <h2 class="section-title">Drive Team</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 1.2rem; font-weight: bold;">Driver:</label>
+                <input type="text" class="textbox textbox-large" id="driver" onchange="updatescores()" value="None">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 1.2rem; font-weight: bold;">Operator:</label>
+                <input type="text" class="textbox textbox-large" id="operator" onchange="updatescores()" value="None">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 1.2rem; font-weight: bold;">Human Player:</label>
+                <input type="text" class="textbox textbox-large" id="human" onchange="updatescores()" value="None">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 1.2rem; font-weight: bold;">Drive Coach:</label>
+                <input type="text" class="textbox textbox-large" id="coach" onchange="updatescores()" value="None">
+            </div>
         </div>
     </div>
 
@@ -231,82 +365,110 @@
         const socket = io();
 
         function reloadclients() {
-            socket.emit('reload')
+            socket.emit('reload');
         }
 
         function starttimer(time) {
-            socket.emit('starttimer', time)
+            socket.emit('starttimer', time);
         }
 
         function stoptimer() {
-            socket.emit('stoptimer')
+            socket.emit('stoptimer');
         }
 
-        socket.on('updateall', (msg) => {
-            document.getElementById('time').innerHTML = formatTime(msg.time);
-            console.log(msg);
-        })
+        // Toggles a Yes/No button
+        function toggleValue(id) {
+            let btn = document.getElementById(id);
+            if (btn.value === 'No') {
+                btn.value = 'Yes';
+                btn.innerHTML = 'Yes';
+                btn.classList.add('active');
+            } else {
+                btn.value = 'No';
+                btn.innerHTML = 'No';
+                btn.classList.remove('active');
+            }
+            updatescores();
+        }
+
+        // Forces a Yes/No button back to 'No'
+        function resetToggle(id) {
+            let btn = document.getElementById(id);
+            btn.value = 'No';
+            btn.innerHTML = 'No';
+            btn.classList.remove('active');
+        }
 
         function updatescores() {
             const json = {
-                'hb': document.getElementById('hb').value,
-                'lb': document.getElementById('lb').value,
-                'net': document.getElementById('net').value,
-                'hc': document.getElementById('hc').value,
-                'lc': document.getElementById('lc').value,
-                'map': document.getElementById('map').value,
-                'mip': document.getElementById('mip').value,
-                'lo': document.getElementById('lo').value,
-                'loau': document.getElementById('loau').value,
+                'leave': document.getElementById('leave').value,
+                'park': document.getElementById('park').value,
+                'hive_tips': document.getElementById('hive_tips').value,
+                'cell_rem': document.getElementById('cell_rem').value,
+                'bot_nectar': document.getElementById('bot_nectar').value,
+                'flower_owned': document.getElementById('flower_owned').value,
+                'garden_elements': document.getElementById('garden_elements').value,
+                'minor_foul': document.getElementById('minor_foul').value,
+                'major_foul': document.getElementById('major_foul').value,
+                
                 'bgcolor': document.getElementById('bgcolor').value,
                 'silent': document.getElementById('silent').checked,
                 'dev': document.getElementById('dev').checked,
+                
                 'driver': document.getElementById('driver').value,
                 'operator': document.getElementById('operator').value,
                 'human': document.getElementById('human').value,
                 'coach': document.getElementById('coach').value,
-            }
-
-            socket.emit('updatescores', json)
+            };
+            socket.emit('updatescores', json);
         }
 
         function reset() {
-            document.getElementById('hb').value = 0;
-            document.getElementById('lb').value = 0;
-            document.getElementById('net').value = 0;
-            document.getElementById('hc').value = 0;
-            document.getElementById('lc').value = 0;
-            document.getElementById('map').value = 0;
-            document.getElementById('mip').value = 0;
-            document.getElementById('lo').value = 'None';
+            resetToggle('leave');
+            resetToggle('park');
+            resetToggle('bot_nectar');
+            
+            document.getElementById('hive_tips').value = 0;
+            document.getElementById('cell_rem').value = 0;
+            document.getElementById('flower_owned').value = 0;
+            document.getElementById('garden_elements').value = 0;
+            document.getElementById('minor_foul').value = 0;
+            document.getElementById('major_foul').value = 0;
+            
             document.getElementById('driver').value = 'None';
             document.getElementById('operator').value = 'None';
             document.getElementById('human').value = 'None';
             document.getElementById('coach').value = 'None';
-            updatescores()
+            
+            updatescores();
         }
 
         socket.on('updateall', (msg) => {
+            let displaySeconds = msg.time;
+            if (msg.time > 120 && msg.time <= 128) {
+                displaySeconds = 120;
+            } else if (msg.time > 128) {
+                displaySeconds = msg.time - 8;
+            }
+            
+            const mins = Math.floor(displaySeconds / 60);
+            const secs = displaySeconds % 60;
+            document.getElementById('time').innerHTML = `${mins}:${secs.toString().padStart(2, '0')}`;
+            
             document.getElementById('totalpoints').innerHTML = msg.total;
             document.getElementById('body').style.backgroundColor = msg.bgcolor;
-        })
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
+        });
 
         function changeValue(id, delta) {
             let input = document.getElementById(id);
             let newValue = parseInt(input.value) + delta;
-            if (newValue >= 0) { // Ensuring the value doesn't go below 0
+            if (newValue >= 0) { 
                 input.value = newValue;
-                updatescores(); // Triggering score update
+                updatescores();
             }
         }
 
-        function submitalert(type, time, title, body) {
+        function submitalert(type, time, title, body='') {
             socket.emit('alert', {'type': type, 'time': time, 'title': title, 'body': body});
         }
     </script>
