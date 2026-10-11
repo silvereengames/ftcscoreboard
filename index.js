@@ -24,12 +24,17 @@ function getDefaultSettings() {
     'park': 0,
     'hive_tips': 0,
     'cell_rem': 0,
-    'bot_nectar': 0,
-    'flower_owned': 0,
+    // Replace old flat values with arrays to track insertion order
+    'flowers': {
+      'red_alliance': [],
+      'red_audience': [],
+      'blue_alliance': [],
+      'blue_audience': []
+    },
     'garden_elements': 0,
     'minor_foul': 0,
     'major_foul': 0,
-    'bgcolor': '#FF0000',
+    'bgcolor': '#FF0000', // Used to determine which alliance's score to calculate
     'silent': 0,
     'total': 0,
     'dev': false,
@@ -166,12 +171,6 @@ io.on('connection', (socket) => {
     io.to(socket.roomCode).emit('alert', msg);
   });
 
-  socket.on('shutdown', () => {
-    console.warn('User requested server shutdown. Goodbye 👋!');
-    server.close(() => process.exit(0));
-    process.exit(0);
-  });
-
   socket.on('starttimer', (msg) => {
     if (socket.roomCode && rooms[socket.roomCode]) {
       resetInactivityTimer(socket.roomCode);
@@ -194,13 +193,41 @@ io.on('connection', (socket) => {
 
     let leavepoints = 0;
     let parkpoints = 0;
-    let botnectarpoints = 0;
 
     if (msg.leave == "Yes" || msg.leave == 1 || msg.leave == true) leavepoints = 3;
     if (msg.park == "Yes" || msg.park == 1 || msg.park == true) parkpoints = 5;
-    if (msg.bot_nectar == "Yes" || msg.bot_nectar == 1 || msg.bot_nectar == true) botnectarpoints = 5;
 
-    const total = leavepoints + parkpoints + botnectarpoints + (msg.hive_tips * 20) + (msg.cell_rem * 2) + (msg.flower_owned * 2) + (msg.garden_elements * 1);
+    // Determine target nectar color based on scoreboard background color
+    const isRedAlliance = (msg.bgcolor && msg.bgcolor.toUpperCase() === '#FF0000');
+    const targetNectar = isRedAlliance ? 'RED' : 'BLUE';
+
+    let flowerPoints = 0;
+    let bottomNectarPoints = 0;
+
+    // Safely parse the flowers arrays if provided
+    const parsedFlowers = msg.flowers || rooms[socket.roomCode].flowers;
+
+    // Calculate Flower ownership and bottom nectar bonuses
+    for (const key in parsedFlowers) {
+      const flowerStack = parsedFlowers[key];
+      // Filter out POLLEN to just look at NECTAR for ownership calculations
+      const nectars = flowerStack.filter(item => item === 'RED' || item === 'BLUE');
+
+      if (nectars.length > 0) {
+        // Bottom NECTAR Bonus: 5 points if the bottom-most nectar matches our alliance
+        if (nectars[0] === targetNectar) {
+          bottomNectarPoints += 5;
+        }
+
+        // Flower Owner: 2 points per element (including pollen) if top-most nectar matches our alliance
+        if (nectars[nectars.length - 1] === targetNectar) {
+          flowerPoints += (flowerStack.length * 2);
+        }
+      }
+    }
+
+    const total = leavepoints + parkpoints + bottomNectarPoints + flowerPoints + 
+                 (msg.hive_tips * 20) + (msg.cell_rem * 2) + (msg.garden_elements * 1);
 
     rooms[socket.roomCode] = {
       'time': rooms[socket.roomCode].time,
@@ -208,8 +235,7 @@ io.on('connection', (socket) => {
       'park': msg.park,
       'hive_tips': msg.hive_tips,
       'cell_rem': msg.cell_rem,
-      'bot_nectar': msg.bot_nectar,
-      'flower_owned': msg.flower_owned,
+      'flowers': parsedFlowers, // Save the updated flower arrays
       'garden_elements': msg.garden_elements,
       'minor_foul': msg.minor_foul,
       'major_foul': msg.major_foul,

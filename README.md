@@ -1,6 +1,7 @@
 # FTC Robot Scoreboard
 
 ![picture1](https://i.imgur.com/fcjd5jq.png)
+![picture1](https://i.imgur.com/Db89fLH.jpeg)
 
 Public website: https://scoreboard.silvereen.dev
 
@@ -21,8 +22,6 @@ What I use is just a $15 FireTV stick with the Amazon Silk website connected to 
 ## Disclaimers
 
 AI was used in this branch to update to Biobuzz. The core logic inside index.js and frontend base was human written back during the Into The Deep season, and just forked across multiple seasons. AI was also used to help create the rooms system and rate limiter. All AI generated code is tested, and all lines are read and double checked by a human before being put into the project. If you open a PR with AI Generated code, please mention exactly what you used AI on and where in the comments, that way we can review it extra carefully. 
-
-Biobuzz introduced a new chime effect at the 60 second mark. As of now, I can't find any official sound effect, so I just replaced it with a sample one I got off of Pixabay: https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=7143
 
 I refrenced the updated game manual and Biobuzz video for game rules and timings. Although I am confident that everything follows game manual rules, there is always a possbility that I made a mistake or missed something. If some scoring mechanism or timing is innaccurate, please create an issue and I will fix it ASAP. This will apply to Biobuzz until August 2027, where I will no longer update this branch. 
 

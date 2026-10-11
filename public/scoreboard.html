@@ -15,7 +15,6 @@
 
         body {
             background-color: #FF0000;
-            /* Fallback, overridden by JS */
             color: #ffffff;
             margin: 0;
             overflow-x: hidden;
@@ -33,8 +32,7 @@
             background-color: rgba(0, 0, 0, 0.85);
             color: white;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            border-bottom: 4px solid #fbdc00;
-            /* FTC Yellow accent */
+            /* Removed the yellow border here to replace with the progress bar */
         }
 
         .top-bar h1 {
@@ -61,12 +59,50 @@
             color: #00ff00;
         }
 
+        /* TIMELINE PROGRESS BAR */
+        .timeline-container {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+        }
+
+        .timeline-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #fbdc00;
+            transition: width 1s linear; /* Smooth 1s tick transition */
+        }
+
+        .timeline-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 10;
+        }
+
+        .marker-label {
+            position: absolute;
+            top: 22px;
+            left: -50%;
+            transform: translateX(-25%);
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #fff;
+            white-space: nowrap;
+            text-shadow: 1px 1px 2px #000;
+        }
+
         .scores-wrapper {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 30px;
-            padding: 40px;
+            padding: 0 40px 40px 40px;
             flex: 1;
         }
 
@@ -108,6 +144,61 @@
             padding-bottom: 10px;
         }
 
+        /* FLOWER VISUAL STACKS */
+        .flower-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .flower-group {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flower-group h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .flower-stack {
+            display: flex;
+            flex-direction: column-reverse; /* Bottom items stay at the bottom of the visual tube */
+            gap: 5px;
+            min-height: 80px;
+            width: 100%;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .flower-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.4rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .indicator-red { background-color: #dc3545; }
+        .indicator-blue { background-color: #0066cc; }
+        .indicator-pollen { background-color: #ffc107; color: black; }
+
         #dev {
             position: fixed;
             bottom: 10px;
@@ -138,6 +229,23 @@
             Time: <span id="time">2:30</span> &nbsp;|&nbsp; Score: <span id="totalpoints">0</span>
         </div>
     </div>
+    
+    <!-- Timeline Bar -->
+    <div class="timeline-container">
+        <div class="timeline-bar" id="timeline-bar"></div>
+        <!-- 30s Auto (18.98% of 158s) -->
+        <div class="timeline-marker" style="left: 18.98%;">
+            <span class="marker-label">Auto Ends</span>
+        </div>
+        <!-- 8s Transition -> 38s elapsed (24.05% of 158s) -->
+        <div class="timeline-marker" style="left: 24.05%;">
+            <span class="marker-label">TeleOp</span>
+        </div>
+        <!-- Flower Unlocked at 60s remaining -> 98s elapsed (62.02% of 158s) -->
+        <div class="timeline-marker" style="left: 62.02%;">
+            <span class="marker-label">Flowers Unlocked</span>
+        </div>
+    </div>
 
     <div class="scores-wrapper">
         <div class="scorescontainer">
@@ -146,10 +254,28 @@
             <h2>Park: <span id="park">No</span></h2>
             <h2>Hive Tips: <span id="hive_tips">0</span></h2>
             <h2>Cell Remaining: <span id="cell_rem">0</span></h2>
-            <h2>Bottom Nectar: <span id="bot_nectar">No</span></h2>
-            <h2>Flower Owned: <span id="flower_owned">0</span></h2>
             <h2>Garden Elements: <span id="garden_elements">0</span></h2>
             <h2>Fouls: <span><span id="minor_foul">0</span> Min / <span id="major_foul">0</span> Maj</span></h2>
+
+            <!-- FLOWERS Visual Section -->
+            <div class="flower-container">
+                <div class="flower-group">
+                    <h3>Red Alliance</h3>
+                    <div class="flower-stack" id="stack-red_alliance"></div>
+                </div>
+                <div class="flower-group">
+                    <h3>Red Audience</h3>
+                    <div class="flower-stack" id="stack-red_audience"></div>
+                </div>
+                <div class="flower-group">
+                    <h3>Blue Alliance</h3>
+                    <div class="flower-stack" id="stack-blue_alliance"></div>
+                </div>
+                <div class="flower-group">
+                    <h3>Blue Audience</h3>
+                    <div class="flower-stack" id="stack-blue_audience"></div>
+                </div>
+            </div>
         </div>
 
         <div class="scorescontainer">
@@ -168,7 +294,6 @@
         socket.emit('joinRoom', roomCode);
         const player = document.getElementById('player');
 
-        // Helper to format boolean values
         function formatBool(val) {
             return (val === "Yes" || val === 1 || val === true) ? "Yes" : "No";
         }
@@ -179,26 +304,22 @@
 
         socket.on('updateall', (msg) => {
             document.getElementById('time').innerHTML = formatTime(msg.time);
+            updateTimeline(msg.time);
 
-            // Score Updates
             document.getElementById('leave').innerHTML = formatBool(msg.leave);
             document.getElementById('park').innerHTML = formatBool(msg.park);
             document.getElementById('hive_tips').innerHTML = msg.hive_tips;
             document.getElementById('cell_rem').innerHTML = msg.cell_rem;
-            document.getElementById('bot_nectar').innerHTML = formatBool(msg.bot_nectar);
-            document.getElementById('flower_owned').innerHTML = msg.flower_owned;
             document.getElementById('garden_elements').innerHTML = msg.garden_elements;
             document.getElementById('minor_foul').innerHTML = msg.minor_foul;
             document.getElementById('major_foul').innerHTML = msg.major_foul;
             document.getElementById('totalpoints').innerHTML = msg.total;
 
-            // Drive Team Updates
             document.getElementById('driver').innerHTML = msg.driver;
             document.getElementById('operator').innerHTML = msg.operator;
             document.getElementById('human').innerHTML = msg.human;
             document.getElementById('coach').innerHTML = msg.coach;
 
-            // UI Updates
             document.getElementById('body').style.backgroundColor = msg.bgcolor;
 
             if (msg.dev == true) {
@@ -207,7 +328,28 @@
                 document.getElementById('dev').style.display = 'none';
             }
 
-            // BIOBUZZ Audio Cues (assuming 158s total: 30s auto + 8s transition + 120s teleop)
+            // Sync flowers from server and render them
+            if (msg.flowers) {
+                for (const key in msg.flowers) {
+                    const stackDiv = document.getElementById("stack-" + key);
+                    if (stackDiv) {
+                        stackDiv.innerHTML = ""; // Clear existing
+                        msg.flowers[key].forEach((item) => {
+                            let indicatorClass = "";
+                            let letter = "";
+                            if (item === "RED") { indicatorClass = "indicator-red"; letter = "R"; }
+                            if (item === "BLUE") { indicatorClass = "indicator-blue"; letter = "B"; }
+                            if (item === "POLLEN") { indicatorClass = "indicator-pollen"; letter = "P"; }
+
+                            const itemDiv = document.createElement("div");
+                            itemDiv.className = `flower-indicator ${indicatorClass}`;
+                            itemDiv.innerText = letter;
+                            stackDiv.appendChild(itemDiv);
+                        });
+                    }
+                }
+            }
+
             if (!msg.silent) {
                 if (msg.time == 158) {
                     player.src = '/audio/match_start.mp3';
@@ -224,13 +366,13 @@
                     player.play();
                 }
 
-                if (msg.time == 123) {
+                if (msg.time == 120) {
                     player.src = '/audio/teleop_start.mp3';
                     player.play();
                 }
 
                 if (msg.time == 60) {
-                    player.src = '/audio/chime-sfx.mp3';
+                    player.src = '/audio/endgame_start.mp3';
                     player.play();
                 }
 
@@ -247,17 +389,27 @@
         });
 
         function formatTime(seconds) {
-            // Adjust to show standard match time, hiding the 8 second transition
             let displaySeconds = seconds;
             if (seconds > 120 && seconds <= 128) {
-                displaySeconds = 120; // Hold at 2:00 during transition
+                displaySeconds = 120;
             } else if (seconds > 128) {
-                displaySeconds = seconds - 8; // Auto period
+                displaySeconds = seconds - 8;
             }
 
             const mins = Math.floor(displaySeconds / 60);
             const secs = displaySeconds % 60;
             return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimeline(secondsRemaining) {
+            const maxTime = 158;
+            let progress = ((maxTime - secondsRemaining) / maxTime) * 100;
+            
+            // Clamp bounds
+            if (progress < 0) progress = 0;
+            if (progress > 100) progress = 100;
+
+            document.getElementById('timeline-bar').style.width = progress + '%';
         }
 
         socket.on('alert', (msg) => {
