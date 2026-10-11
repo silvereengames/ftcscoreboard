@@ -164,6 +164,8 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        const roomCode = window.location.pathname.split('/').pop();
+        socket.emit('joinRoom', roomCode);
         const player = document.getElementById('player');
 
         // Helper to format boolean values
@@ -231,7 +233,7 @@
                     player.src = '/audio/chime-sfx.mp3';
                     player.play();
                 }
-                
+
                 if (msg.time == 20) {
                     player.src = '/audio/endgame_start.mp3';
                     player.play();

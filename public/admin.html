@@ -47,8 +47,10 @@
         .top-bar span {
             color: #00ff00;
         }
-        
-        #time { color: #fbdc00; }
+
+        #time {
+            color: #fbdc00;
+        }
 
         .control-panel {
             text-align: center;
@@ -223,10 +225,23 @@
                 align-items: stretch;
                 gap: 10px;
             }
-            .score-row p { text-align: center; }
-            .score-controls { justify-content: center; }
-            .button-main { width: 45%; padding: 15px 10px; }
-            .btn-toggle { width: 100%; }
+
+            .score-row p {
+                text-align: center;
+            }
+
+            .score-controls {
+                justify-content: center;
+            }
+
+            .button-main {
+                width: 45%;
+                padding: 15px 10px;
+            }
+
+            .btn-toggle {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -238,29 +253,33 @@
     </div>
 
     <div class="control-panel">
+        <h3 id="roomcode">Room: 00000</h3>
         <button onclick="starttimer(159)" class="button-main">Start Match</button>
         <button onclick="stoptimer()" class="button-main button-danger">Stop</button>
         <button onclick="starttimer(128)" class="button-main">TeleOp Only</button>
         <button onclick="reset()" class="button-main">Reset Scores</button>
-        <button onclick="submitalert('info', 7000, 'Final Score: '+document.getElementById('totalpoints').innerHTML)" class="button-main">Post Score</button>
-        
+        <button onclick="submitalert('info', 7000, 'Final Score: '+document.getElementById('totalpoints').innerHTML)"
+            class="button-main">Post Score</button>
+
         <details>
             <summary>Admin Options</summary>
-            <p>Background Color (Red/Blue): 
+            <p>Background Color (Red/Blue):
                 <input type="color" id="bgcolor" onchange="updatescores()" value="#FF0000">
             </p>
             <p><label><input type="checkbox" id="silent" onchange="updatescores()"> Silent Mode</label></p>
             <p><label><input type="checkbox" id="dev" onchange="updatescores()"> Developer Mode</label></p>
             <hr style="border-color: #555;">
-            <button onclick="reloadclients()" class="button-main" style="width: 100%; margin: 5px 0;">Force Client Reload</button>
-            <button onclick="socket.emit('shutdown')" class="button-main button-danger" style="width: 100%; margin: 5px 0;">Shut Down Server</button>
+            <button onclick="reloadclients()" class="button-main" style="width: 100%; margin: 5px 0;">Force Client
+                Reload</button>
+            <button onclick="socket.emit('shutdown')" class="button-main button-danger"
+                style="width: 100%; margin: 5px 0;">Shut Down Server</button>
         </details>
     </div>
 
     <div class="scores-wrapper">
         <div class="scorescontainer">
             <h2 class="section-title">Scoring</h2>
-            
+
             <div class="score-row">
                 <p>Robot Leave (Auto):</p>
                 <div class="score-controls">
@@ -296,7 +315,8 @@
             <div class="score-row">
                 <p>Bottom Nectar Bonus:</p>
                 <div class="score-controls">
-                    <button id="bot_nectar" class="btn-toggle" onclick="toggleValue('bot_nectar')" value="No">No</button>
+                    <button id="bot_nectar" class="btn-toggle" onclick="toggleValue('bot_nectar')"
+                        value="No">No</button>
                 </div>
             </div>
 
@@ -317,7 +337,7 @@
                     <button class="btn-math" onclick="changeValue('garden_elements', 1)">+</button>
                 </div>
             </div>
-            
+
             <div class="score-row">
                 <p>Minor Fouls (Opponent):</p>
                 <div class="score-controls">
@@ -340,7 +360,7 @@
 
         <div class="scorescontainer">
             <h2 class="section-title">Drive Team</h2>
-            
+
             <div style="margin-bottom: 15px;">
                 <label style="font-size: 1.2rem; font-weight: bold;">Driver:</label>
                 <input type="text" class="textbox textbox-large" id="driver" onchange="updatescores()" value="None">
@@ -363,6 +383,10 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        const roomCode = window.location.pathname.split('/').pop();
+        socket.emit('joinRoom', roomCode);
+
+        document.getElementById("roomcode").innerHTML = `Room: <a href="${window.location.protocol}//${window.location.host}/scoreboard/${roomCode}">${roomCode}</a>`;
 
         function reloadclients() {
             socket.emit('reload');
@@ -410,11 +434,11 @@
                 'garden_elements': document.getElementById('garden_elements').value,
                 'minor_foul': document.getElementById('minor_foul').value,
                 'major_foul': document.getElementById('major_foul').value,
-                
+
                 'bgcolor': document.getElementById('bgcolor').value,
                 'silent': document.getElementById('silent').checked,
                 'dev': document.getElementById('dev').checked,
-                
+
                 'driver': document.getElementById('driver').value,
                 'operator': document.getElementById('operator').value,
                 'human': document.getElementById('human').value,
@@ -427,19 +451,19 @@
             resetToggle('leave');
             resetToggle('park');
             resetToggle('bot_nectar');
-            
+
             document.getElementById('hive_tips').value = 0;
             document.getElementById('cell_rem').value = 0;
             document.getElementById('flower_owned').value = 0;
             document.getElementById('garden_elements').value = 0;
             document.getElementById('minor_foul').value = 0;
             document.getElementById('major_foul').value = 0;
-            
+
             document.getElementById('driver').value = 'None';
             document.getElementById('operator').value = 'None';
             document.getElementById('human').value = 'None';
             document.getElementById('coach').value = 'None';
-            
+
             updatescores();
         }
 
@@ -450,11 +474,11 @@
             } else if (msg.time > 128) {
                 displaySeconds = msg.time - 8;
             }
-            
+
             const mins = Math.floor(displaySeconds / 60);
             const secs = displaySeconds % 60;
             document.getElementById('time').innerHTML = `${mins}:${secs.toString().padStart(2, '0')}`;
-            
+
             document.getElementById('totalpoints').innerHTML = msg.total;
             document.getElementById('body').style.backgroundColor = msg.bgcolor;
         });
@@ -462,14 +486,14 @@
         function changeValue(id, delta) {
             let input = document.getElementById(id);
             let newValue = parseInt(input.value) + delta;
-            if (newValue >= 0) { 
+            if (newValue >= 0) {
                 input.value = newValue;
                 updatescores();
             }
         }
 
-        function submitalert(type, time, title, body='') {
-            socket.emit('alert', {'type': type, 'time': time, 'title': title, 'body': body});
+        function submitalert(type, time, title, body = '') {
+            socket.emit('alert', { 'type': type, 'time': time, 'title': title, 'body': body });
         }
     </script>
 </body>
